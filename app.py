@@ -5,6 +5,7 @@ import tkinter.font as font
 
 from collect_data_images.collect_images import Datacollector
 
+
 class RegistrationModule:
 
     def __init__(self,logFileName):
@@ -73,18 +74,28 @@ class RegistrationModule:
         self.mobileNoTxt = tk.Entry(self.window, width=20, bg="white", fg="black", font=('times', 15, ' bold '))
         self.mobileNoTxt.place(x=575, y=140)
 
-        notify = tk.Label(self.window, text="Notification : ", width=15, fg="white", bg="#363e75", height=2,
+        lbl3 = tk.Label(self.window, text="Notification : ", width=15, fg="white", bg="#363e75", height=2,
                         font=('times', 15))
-        notify.place(x=80, y=260)
-
         self.message = tk.Label(self.window, text="", bg="white", fg="black", width=30, height=1,
                                 activebackground="#e47911", font=('times', 15))
         self.message.place(x=220, y=220)
+        lbl3.place(x=80, y=260)
+
+        self.message = tk.Label(self.window, text="", bg="#bbc7d4", fg="black", width=58, height=2, activebackground="#bbc7d4",
+                           font=('times', 15))
+        self.message.place(x=205, y=260)
         
         takeImg = tk.Button(self.window, text="Take Images", command=self.collectUserImageForRegistration, fg="white", bg="#363e75", width=15,
                             height=2,
                             activebackground="#118ce1", font=('times', 15, ' bold '))
         takeImg.place(x=80, y=350)
+
+        '''predictImg = tk.Button(self.window, text="Predict", command=self.makePrediction, fg="white", bg="#363e75",
+                             width=15,
+                             height=2,
+                             activebackground="#118ce1", font=('times', 15, ' bold '))
+        predictImg.place(x=600, y=350)'''
+
 
         self.window.mainloop()
 
@@ -97,15 +108,17 @@ class RegistrationModule:
 
         ap.add_argument("--faces", default=50,
                             help="Number of faces that camera will get")
-        ap.add_argument("--output", default="../datasets/train/" + name,
+        ap.add_argument("--output", default="F:/faceDetection/datasets/train/" + name,
                             help="Path to faces output")
         args = vars(ap.parse_args())
 
         trnngDataCollctrObj = Datacollector(args)
         trnngDataCollctrObj.collectImagesFromCamera()
 
-        notifctn = "We have collected " + str(args["faces"]) + " images for training."
+        notifctn = "total " + str(args["faces"]) + " images are captured"
         self.message.configure(text=notifctn)
+
+    
         
             
 

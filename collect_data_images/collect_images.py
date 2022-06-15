@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import os
 from datetime import datetime
+import time
 
 class Datacollector:
 
@@ -30,10 +31,17 @@ class Datacollector:
             frames += 1
 
             dtString = str(datetime.now().microsecond)
+
+            time.sleep(0.10)
             # Get all faces on current frame
             #bboxes = self.detector.detect_faces(frame)
+            cv2.imwrite(os.path.join(self.args["output"], "{}.jpg".format(dtString)),frame)
+
+            print("[INFO] {} Image Captured".format(faces + 1))
+            faces += 1
 
             cv2.imshow("Face detection", frame)
+
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
