@@ -4,7 +4,6 @@ import numpy as np
 import cv2
 import os
 from datetime import datetime
-import time
 
 class Datacollector:
 
@@ -21,7 +20,7 @@ class Datacollector:
         faces = 0
         frames = 0
         max_faces = int(self.args["faces"])
-        max_bbox = np.zeros(4)
+        #max_bbox = np.zeros(4)
         
         if not (os.path.exists(self.args["output"])):
             os.makedirs(self.args["output"])
@@ -29,13 +28,13 @@ class Datacollector:
         while faces < max_faces:
             ret, frame = cap.read()
             frames += 1
-
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             dtString = str(datetime.now().microsecond)
 
-            time.sleep(0.10)
+            
             # Get all faces on current frame
             #bboxes = self.detector.detect_faces(frame)
-            cv2.imwrite(os.path.join(self.args["output"], "{}.jpg".format(dtString)),frame)
+            cv2.imwrite(os.path.join(self.args["output"], "img.jpg"),frame)
 
             print("[INFO] {} Image Captured".format(faces + 1))
             faces += 1

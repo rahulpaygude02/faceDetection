@@ -1,9 +1,13 @@
+from ast import Break
 import tkinter as tk
 from tkinter import *
 import argparse
 import tkinter.font as font
+import time,os
+
 
 from collect_data_images.collect_images import Datacollector
+from Predict_utils.FacePredict import FacePredict
 
 
 class RegistrationModule:
@@ -41,14 +45,7 @@ class RegistrationModule:
         
         header.place(x=0,y=0)
 
-        clientID = tk.Label(self.window, text="Client ID", width=10, height=2, fg="white", bg="#363e75", font=('times', 15))
-        clientID.place(x=80, y=80)
-
-        displayVariable = StringVar()
-        self.clientIDTxt = tk.Entry(self.window, width=20, text=displayVariable, bg="white", fg="black",
-                               font=('times', 15, 'bold'))
-        self.clientIDTxt.place(x=205, y=80)
-
+        
         empID = tk.Label(self.window, text="EmpID", width=10, fg="white", bg="#363e75", height=2, font=('times', 15))
         empID.place(x=450, y=80)
 
@@ -62,10 +59,10 @@ class RegistrationModule:
         self.empNameTxt.place(x=205, y=140)
 
         emailId = tk.Label(self.window, text="Email ID :", width=10, fg="white", bg="#363e75", height=2, font=('times', 15))
-        emailId.place(x=450, y=140)
+        emailId.place(x=80, y=80)
 
         self.emailIDTxt = tk.Entry(self.window, width=20, bg="white", fg="black", font=('times', 15, ' bold '))
-        self.emailIDTxt.place(x=575, y=140)
+        self.emailIDTxt.place(x=205, y=80)
 
         mobileNo = tk.Label(self.window, text="Mobile No :", width=10, fg="white", bg="#363e75", height=2,
                             font=('times', 15))
@@ -90,37 +87,98 @@ class RegistrationModule:
                             activebackground="#118ce1", font=('times', 15, ' bold '))
         takeImg.place(x=80, y=350)
 
-        '''predictImg = tk.Button(self.window, text="Predict", command=self.makePrediction, fg="white", bg="#363e75",
+        predictImg = tk.Button(self.window, text="Predict", command=self.makePrediction, fg="white", bg="#363e75",
                              width=15,
                              height=2,
                              activebackground="#118ce1", font=('times', 15, ' bold '))
-        predictImg.place(x=600, y=350)'''
+        predictImg.place(x=600, y=350)
+
+        notifctn = "enter details for attendance"
+        self.message.configure(text=notifctn)
 
 
         self.window.mainloop()
 
 
     def collectUserImageForRegistration(self):
-        clientIDVal = (self.clientIDTxt.get())
+        
         empIDVal = self.empIDTxt.get()
         name = (self.empNameTxt.get())
         ap = argparse.ArgumentParser()
 
-        ap.add_argument("--faces", default=50,
-                            help="Number of faces that camera will get")
-        ap.add_argument("--output", default="F:/faceDetection/datasets/train/" + name,
-                            help="Path to faces output")
-        args = vars(ap.parse_args())
+        if len(name) == 0:
+            notifctn = "Please Enter Employee Details"
+            self.message.configure(text=notifctn)           
 
-        trnngDataCollctrObj = Datacollector(args)
-        trnngDataCollctrObj.collectImagesFromCamera()
+        else :
+            ap.add_argument("--faces", default=1,
+                                help="Number of faces that camera will get")
+            ap.add_argument("--output", default="F:/faceDetection/datasets/train/" + name + empIDVal,
+                                help="Path to faces output")
+            args = vars(ap.parse_args())
 
-        notifctn = "total " + str(args["faces"]) + " images are captured"
-        self.message.configure(text=notifctn)
+            trnngDataCollctrObj = Datacollector(args)
+            trnngDataCollctrObj.collectImagesFromCamera()
+
+            notifctn = "Image for " + name + " is captured" 
+            self.message.configure(text=notifctn)
+
+            time.sleep(3)
+
+            notifctn = "click on predict to mark your attendance" 
+            self.message.configure(text=notifctn)
+        Break
+
+            
 
     
-        
+    def makePrediction(self):
+
+        count= 0     
+        empIDVal = self.empIDTxt.get()
+        name = (self.empNameTxt.get())
+        ap = argparse.ArgumentParser()
+
+        ap.add_argument("--faces", default=1,
+                                help="Number of faces that camera will get")
+        ap.add_argument("--temp", default="F:/faceDetection/datasets/temp/",
+                                help="Temp Path to faces output")
+        ap.add_argument("--output", default="F:/faceDetection/datasets/train/" + name + empIDVal,
+                                    help="Path to faces output")
+                                    
+        args = vars(ap.parse_args())
+
+        if len(name) == 0:
+                notifctn = "Please Enter Employee Details"
+                self.message.configure(text=notifctn) 
+        else:
+                        
+            while os.path.isdir("F:/faceDetection/datasets/train/" + name + empIDVal):
+
+                notifctn = "Detecting your face, please wait"
+                self.message.configure(text=notifctn)
+
+                faceDetector = FacePredict(args)
+                varify = faceDetector.detectFace()    
+
+                if varify == True:
+                    notifctn = "attendance marked"
+                    self.message.configure(text=notifctn)
             
+                else :
+                    notifctn = "Enter correct details"
+                    self.message.configure(text=notifctn)
+                break
+                    
+            else:
+                notifctn = "pls register yourself first if not registered"
+                self.message.configure(text=notifctn)
+                Break
+                
+                
+             
+
+                
 
 
 logFileName = "ProceduralLog.txt"
